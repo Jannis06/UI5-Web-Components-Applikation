@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+    <!-- Importmap für die UI5 Web Components -->
+    <script type="importmap">
+        {
+            "imports": {
+                "@ui5/webcomponents/": "https://sap.github.io/ui5-webcomponents/local-cdn/main/",
+                "@ui5/webcomponents-base/": "https://sap.github.io/ui5-webcomponents/local-cdn/base/",
+                "@ui5/webcomponents-icons/": "https://sap.github.io/ui5-webcomponents/local-cdn/icons/",
+                "@ui5/webcomponents-localization/": "https://sap.github.io/ui5-webcomponents/local-cdn/localization/",
+                "@ui5/webcomponents-theming/": "https://sap.github.io/ui5-webcomponents/local-cdn/theming/",
+                "lit-html": "https://sap.github.io/ui5-webcomponents/local-cdn/lit-html/lit-html.js",
+                "lit-html/": "https://sap.github.io/ui5-webcomponents/local-cdn/lit-html/",
+                "@zxing/library/umd/": "https://sap.github.io/ui5-webcomponents/local-cdn/zxing/umd/",
+                "@zxing/library/esm5/": "https://sap.github.io/ui5-webcomponents/local-cdn/zxing/esm5/"
+            }
+        }
+    </script>
+
+    <!-- CSS-Styles für bestimmte Elemente -->
+    <style>
+        .login-form {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 10px 20px;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .login-form ui5-label {
+            justify-self: end;
+        }
+
+        .login-form ui5-input {
+            width: 100%;
+        }
+
+        ui5-button {
+            width: 6rem;
+        }
+
+        ui5-table-column {
+            width: 150px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- ShellBar mit Titel -->
+    <ui5-shellbar id="shellbar" primary-title="Artikelbestand"></ui5-shellbar>
+
+    <!-- Toolbar mit den Buttons -->
+    <ui5-toolbar>
+        <ui5-toolbar-button id="dialogOpener" text="Erstellen" design="Default"></ui5-toolbar-button>
+        <ui5-toolbar-button id="deleteButton" text="Löschen" design="Default"></ui5-toolbar-button>
+    </ui5-toolbar>
+
+    <!-- Dialog zum Erstellen von Artikeln -->
+    <ui5-dialog id="dialog" header-text="Artikel erstellen" draggable="true">
+        <section class="login-form">
+            <div>
+                <!-- Label und Eingabefeld für Artikelnummer -->
+                <ui5-label for="Artikelnummer" required show-colon>Artikelnummer</ui5-label>
+                <ui5-input id="Artikelnummer"></ui5-input>
+            </div>
+            <div>
+                <!-- Label und Eingabefeld für Bezeichnung -->
+                <ui5-label for="Bezeichnung" required show-colon>Bezeichnung</ui5-label>
+                <ui5-input id="Bezeichnung"></ui5-input>
+            </div>
+            <div>
+                <!-- Label und Eingabefeld für Preis -->
+                <ui5-label for="Preis" required show-colon>Preis</ui5-label>
+                <ui5-input id="Preis"></ui5-input>
+            </div>
+            <div>
+                <!-- Label und Eingabefeld für Bestand -->
+                <ui5-label for="Bestand" required show-colon>Bestand</ui5-label>
+                <ui5-input id="Bestand"></ui5-input>
+            </div>
+        </section>
+        <!-- Fußzeile des Dialogs mit Buttons -->
+        <div slot="footer" style="display: flex; justify-content: flex-end; width: 100%; align-items: center">
+            <!-- Button zum Abbrechen -->
+            <ui5-button class="dialogCloser" width="20rem" design="Default">Abbrechen</ui5-button>
+            <ui5-toolbar-spacer width="1rem"></ui5-toolbar-spacer>
+            <!-- Button zum Erstellen -->
+            <ui5-button class="dialogCreate" design="Emphasized" width>Erstellen</ui5-button>
+        </div>
+    </ui5-dialog>
+
+    <!-- Fehler-Box beim Löschen -->
+    <ui5-dialog id="errorDialogDelete" header-text="Fehler" state="Error">
+        <section>
+            <div>Es muss mindestens ein Artikel ausgewählt sein.</div>
+        </section>
+        <!-- Fußzeile der Fehler-Box -->
+        <div slot="footer" style="display: flex; justify-content: flex-end; width: 100%; align-items: center">
+            <!-- Button zum Schließen des Dialogs -->
+            <ui5-button id="errorDialogDeleteCloser" design="Default">Schließen</ui5-button>
+        </div>
+    </ui5-dialog>
+
+    <!-- Warn-Box beim Erstellen -->
+    <ui5-dialog id="errorDialogCreate" header-text="Warnung" state="Warning">
+        <section>
+            <div>Alle Felder müssen ausgefüllt sein.</div>
+        </section>
+        <!-- Fußzeile der Warn-Box -->
+        <div slot="footer" style="display: flex; justify-content: flex-end; width: 100%; align-items: center">
+            <!-- Button zum Schließen des Dialogs -->
+            <ui5-button id="errorDialogCreateCloser" design="Default">Schließen</ui5-button>
+        </div>
+    </ui5-dialog>
+
+    <!-- Tabelle zur Anzeige des Artikelbestands -->
+    <ui5-table id="artikelTable" mode="MultiSelect" sticky-column-header growing="Scroll" busy-delay="0">
+        <!-- Spalten der Tabelle -->
+        <ui5-table-column slot="columns" width="5rem" popin-text="Artikelnummer" demand-popin popin-display="Inline">
+            <span>Artikelnummer</span>
+        </ui5-table-column>
+        <ui5-table-column slot="columns" min-width="600" popin-text="Bezeichnung" demand-popin popin-display="Inline">
+            <span>Bezeichnung</span>
+        </ui5-table-column>
+        <ui5-table-column slot="columns" min-width="600" popin-text="Preis" demand-popin popin-display="Inline">
+            <span>Preis</span>
+        </ui5-table-column>
+        <ui5-table-column slot="columns" min-width="600" popin-text="Bestand" demand-popin popin-display="Inline">
+            <span>Bestand</span>
+        </ui5-table-column>
+    </ui5-table>
+
+    <!-- Toast für Erfolgsmeldung beim Erstellen -->
+    <ui5-toast id="createToast" placement="BottomCenter" duration="3000">Artikel erfolgreich erstellt</ui5-toast>
+    <!-- Toast für Erfolgsmeldung beim Löschen -->
+    <ui5-toast id="deleteToast" placement="BottomCenter" duration="3000">Artikel erfolgreich gelöscht</ui5-toast>
+
+    <!-- Hauptskript für die Anwendung -->
+    <script type="module" src="main.js"></script>
+</body>
+
+</html>
